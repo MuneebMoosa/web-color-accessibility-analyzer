@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name" : "See Easy : For better Color Accessibility",
+  "description": "Provides one-click visual assistance to improve color contrast and readability for color-blind users.",
+  "version" : "1.0.0",
+
+  "permissions": ["storage"],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Color Accessibility Assistant"
+  },
+
+  "icons": {
+  "16": "icons/color icon.png",
+  "48": "icons/color icon.png",
+  "128": "icons/color icon.png"
+  },
+
+
+  "content_scripts": [
+   {
+    "matches": ["<all_urls>"],
+    "js": ["userMode.js"],
+    "css": ["userMode.css"],
+    "run_at": "document_idle"
+    }
+  ],
+
+
+  "background": {
+    "service_worker": "background.js"
+  }
+
+
+} 
