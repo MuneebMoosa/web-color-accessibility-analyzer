@@ -3,17 +3,93 @@
   --secondary-bg: #FFFFFF;
   --primary-text: #1F2937;
   --secondary-text: #6B7280;
-  --accent-blue: #2563EB;
-  --accent-blue-hover: #1D4ED8;
-  --accent-purple: #7C3AED;
-  --accent-purple-hover: #6D28D9;
   --border-color: #E5E7EB;
   --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --universal-color: linear-gradient(135deg, #2F80ED, #56CCF2);
+  --protanopia-color: linear-gradient(135deg, #7B61FF, #5F9CFF);
+  --tritanopia-color:linear-gradient(135deg, #F2994A, #4F4F4F);
+  --deuteranopia-color:linear-gradient(135deg, #1ABC9C, #0B3C5D);
+  --universal-text: #2F80ED;
+  --protanopia-text: #7B61FF;
+  --tritanopia-text: #F2994A ;
+  --deuteranopia-text: #1ABC9C;
 }
 
 body {
-    width: 300px;
-    height: 360px;
-    background: var(--primary-text);
+    width: 340px;
+    height: 480px;
+    background: var(--primary-bg);
 }
-
+.usermode-container{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+.usermode-container p{
+  font-weight: bold;
+  font-size: 15px;
+  text: center;
+}
+.btn-container{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 20px;
+}
+.usermode-btn{
+  max-width: 260px;
+  height: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 24px;
+  color: var(--primary-bg);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition:
+    background-color 1.0s ease-out,
+    color 0.4s ease-in,
+    border-color 0.4s ease-in,
+    box-shadow 0.4s ease;
+}
+.universal{
+  background: var(--universal-color)
+}
+.protanopia{
+  background: var(--protanopia-color);
+}
+.deuteranopia{
+  background: var(--deuteranopia-color)
+}
+.tritanopia{
+  background: var(--tritanopia-color)
+}
+.usermode-btn:hover{
+  background: var(--primary-bg);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+.universal:hover{
+  border-color: var(--universal-text);
+  color: var(--universal-text)
+}
+.protanopia:hover{
+  border-color: var(--protanopia-text);
+  color: var(--protanopia-text);
+}
+.deuteranopia:hover{
+  border-color: var( --deuteranopia-text);
+  color: var( --deuteranopia-text);
+}
+.tritanopia:hover{
+  border-color: var( --tritanopia-text);
+  color: var( --tritanopia-text);
+}
