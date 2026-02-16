@@ -1,3 +1,8 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 :root {
   --primary-bg: #F8F9FA;
   --secondary-bg: #FFFFFF;
@@ -30,7 +35,7 @@ body {
 }
 .usermode-container p{
   font-weight: bold;
-  font-size: 15px;
+  font-size: 17px;
   text: center;
 }
 .btn-container{
@@ -92,4 +97,27 @@ body {
 .tritanopia:hover{
   border-color: var( --tritanopia-text);
   color: var( --tritanopia-text);
+}
+.universal.active {
+  border-color: var(--universal-text);
+  color: var(--universal-text);
+  background: var(--primary-bg);
+}
+
+.protanopia.active {
+  border-color: var(--protanopia-text);
+  color: var(--protanopia-text);
+  background: var(--primary-bg);
+}
+
+.deuteranopia.active {
+  border-color: var(--deuteranopia-text);
+  color: var(--deuteranopia-text);
+  background: var(--primary-bg);
+}
+
+.tritanopia.active {
+  border-color: var(--tritanopia-text);
+  color: var(--tritanopia-text);
+  background: var(--primary-bg);
 }
