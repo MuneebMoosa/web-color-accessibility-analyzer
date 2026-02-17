@@ -22,14 +22,14 @@ function resetMode() {
   document.body.style.color = "";
 }
 
-// run on page load only once per page load
-    chrome.storage.local.get(["userModeEnabled", "selectedMode"], (data) => {
-      if (data.userModeEnabled && data.selectedMode) {
-        runMode(data.selectedMode);
-      }
-    });
+// run on content script load
+chrome.storage.local.get(["userModeEnabled", "selectedMode"], (data) => {
+  if (data.userModeEnabled && data.selectedMode) {
+    runMode(data.selectedMode);
+  }
+});
 
-// Listen For Storage Changes if any mode change it will run
+// Listen For Storage Changes and if any mode change it will run
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local") { 
     if (changes.userModeEnabled && changes.userModeEnabled.newValue === false) {

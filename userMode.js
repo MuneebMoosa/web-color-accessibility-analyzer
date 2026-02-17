@@ -46,10 +46,12 @@ buttons.forEach(button => {
         buttons.forEach(btn => btn.classList.remove("active"));
 
         // Tell all tabs to reset
-        chrome.tabs.query({}, (tabs) => {
+        chrome.tabs.query({}).then((tabs) => {
           tabs.forEach(tab => {
             chrome.tabs.sendMessage(tab.id, {
               action: "disableMode"
+            }).catch(() => {
+              // ignore safely
             });
           });
         });
@@ -64,14 +66,17 @@ buttons.forEach(button => {
           }, () => {
             setActive(selectedMode);
             // Send message to ALL open tabs
-            chrome.tabs.query({}, (tabs) => {
+            chrome.tabs.query({}).then((tabs) => {
               tabs.forEach(tab => {
                 chrome.tabs.sendMessage(tab.id, {
                   action: "applyMode",
                   mode: selectedMode
+                }).catch(() => {
+                  // ignore safely
                 });
               });
             });
+
             window.close(); // close popup after selection
         });
     })
