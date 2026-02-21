@@ -50,6 +50,9 @@ body {
   flex-direction: column;
   transition: 0.2s ease, box-shadow 0.2s ease;
 }
+.btn-wrapper{
+
+}
 
 .btn-wrapper:hover {
   transform: translateY(-4px);
@@ -67,6 +70,7 @@ body {
   align-items: center;
   gap: 8px; 
   background: var(--accent-blue);
+  text-decoration: none;
   color: white;
   border: none;
   border-radius: 8px;

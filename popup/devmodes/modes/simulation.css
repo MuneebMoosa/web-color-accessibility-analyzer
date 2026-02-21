@@ -1,0 +1,92 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+:root {
+  --primary-bg: #F8F9FA;
+  --secondary-bg: #FFFFFF;
+  --primary-text: #1F2937;
+  --secondary-text: #6B7280;
+  --accent-blue: #2563EB;
+  --accent-blue-hover: #1D4ED8;
+  --accent-purple: #7C3AED;
+  --accent-purple-hover: #6D28D9;
+  --border-color: #E5E7EB;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+body {
+    width: 340px;
+    height: 480px;
+    background: var(--primary-bg);
+}
+.simulation-container {
+  padding-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+.heading {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: var(--primary-text);
+}
+
+/* Card Style */
+.simulation-card {
+  width: 260px;
+  padding: 12px 14px;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.simulation-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+
+/* default hide */
+.simulation-card input{
+  display: none;
+}
+
+/* custom circle */
+.radio-circle {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #2563EB;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+/* Selected state */
+.simulation-card input:checked + .radio-circle::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #2563EB;
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.label-text {
+  font-size: 16px;
+  color: var(--primary-text);
+}
+
+.label-text small {
+  font-size: 14px;
+  color: var(--secondary-text);
+}
