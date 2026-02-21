@@ -9,17 +9,18 @@
   --primary-text: #1F2937;
   --secondary-text: #6B7280;
   --border-color: #E5E7EB;
-  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --universal-color: linear-gradient(135deg, #2F80ED, #56CCF2);
-  --protanopia-color: linear-gradient(135deg, #7B61FF, #5F9CFF);
-  --tritanopia-color:linear-gradient(135deg, #F2994A, #4F4F4F);
-  --deuteranopia-color:linear-gradient(135deg, #1ABC9C, #0B3C5D);
-  --universal-text: #2F80ED;
-  --protanopia-text: #7B61FF;
-  --tritanopia-text: #F2994A ;
-  --deuteranopia-text: #1ABC9C;
-}
+  --shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
 
+  --universal-color: linear-gradient(135deg, #1D4ED8, #2563EB);
+  --protanopia-color: linear-gradient(135deg, #6D28D9, #7C3AED);
+  --deuteranopia-color: linear-gradient(135deg, #0F766E, #14B8A6);
+  --tritanopia-color: linear-gradient(135deg, #B45309, #D97706);
+
+  --universal-text: #1D4ED8;
+  --protanopia-text: #6D28D9;
+  --deuteranopia-text: #0F766E;
+  --tritanopia-text: #B45309;
+}
 body {
     width: 340px;
     height: 480px;
@@ -78,46 +79,43 @@ body {
 .tritanopia{
   background: var(--tritanopia-color)
 }
-.usermode-btn:hover{
+.usermode-btn:hover {
   background: var(--primary-bg);
   box-shadow: var(--shadow);
 }
-.universal:hover{
+.universal:hover {
   border-color: var(--universal-text);
-  color: var(--universal-text)
+  color: var(--universal-text);
 }
-.protanopia:hover{
+.protanopia:hover {
   border-color: var(--protanopia-text);
   color: var(--protanopia-text);
 }
-.deuteranopia:hover{
-  border-color: var( --deuteranopia-text);
-  color: var( --deuteranopia-text);
+.deuteranopia:hover {
+  border-color: var(--deuteranopia-text);
+  color: var(--deuteranopia-text);
 }
-.tritanopia:hover{
-  border-color: var( --tritanopia-text);
-  color: var( --tritanopia-text);
+.tritanopia:hover {
+  border-color: var(--tritanopia-text);
+  color: var(--tritanopia-text);
+}
+.usermode-btn.active {
+  background: var(--primary-bg);
+  font-weight: 700;
 }
 .universal.active {
   border-color: var(--universal-text);
   color: var(--universal-text);
-  background: var(--primary-bg);
 }
-
 .protanopia.active {
   border-color: var(--protanopia-text);
   color: var(--protanopia-text);
-  background: var(--primary-bg);
 }
-
 .deuteranopia.active {
   border-color: var(--deuteranopia-text);
   color: var(--deuteranopia-text);
-  background: var(--primary-bg);
 }
-
 .tritanopia.active {
   border-color: var(--tritanopia-text);
   color: var(--tritanopia-text);
-  background: var(--primary-bg);
 }
