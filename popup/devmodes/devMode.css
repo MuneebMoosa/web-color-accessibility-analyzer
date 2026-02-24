@@ -50,21 +50,22 @@ body {
   flex-direction: column;
   transition: 0.2s ease, box-shadow 0.2s ease;
 }
-.btn-wrapper{
-
+.btn-wrapper span{
+  font-size: 11px;
 }
 
 .btn-wrapper:hover {
   transform: translateY(-4px);
   box-shadow: var(--shadow);
 }
-.eye-icon {
+.icon {
   width: 18px;
   height: 18px;
 }
 .devmode-btn {
   width: 100%;
   height: 50px;
+  padding: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -79,6 +80,9 @@ body {
   cursor: pointer;
   transition: 0.2s ease;
 }
+/* .contrast-btn{
+  padding: 10px;
+} */
 
 .devmode-btn:hover {
   background: var(--accent-blue-hover);

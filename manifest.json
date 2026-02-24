@@ -7,7 +7,7 @@
   "permissions": ["storage" , "tabs", "scripting"],
 
   "action": {
-    "default_popup": "popup/popup.html",
+    "default_popup": "popup/devmodes/modes/wcagChecker.html",
     "default_title": "Color Accessibility Assistant"
   },
 
@@ -21,7 +21,8 @@
   {
     "matches": ["<all_urls>"],
     "js": ["contentscripts/contentScript.js",
-           "contentscripts/simulationLogic.js"],
+           "contentscripts/simulationLogic.js",
+           "contentscripts/wcagCheckerLogic.js"],
     "run_at": "document_idle"
   }
 ],
@@ -29,6 +30,5 @@
   "background": {
     "service_worker": "background.js"
   }
-
 
 } 
