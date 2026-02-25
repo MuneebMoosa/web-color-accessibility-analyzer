@@ -7,7 +7,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.type === "RUN_WCAG_SCAN") {
         const results = runScan();
         sendResponse(results);
-
         return true;
     }
 
@@ -23,15 +22,12 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 });
 
-/* ================= MAIN SCAN ================= */
-
 function runScan() {
 
     scannedElements = [];
     const unique = new Map();
 
     scanNormal(unique);
-    scanHoverRules(unique);
 
     const results = Array.from(unique.values());
 
@@ -44,8 +40,6 @@ function runScan() {
 
     return { summary, results };
 }
-
-/* ================= NORMAL SCAN ================= */
 
 function scanNormal(unique) {
 
@@ -66,7 +60,7 @@ function scanNormal(unique) {
         if (!fg) return;
 
         const bgData = resolveBackground(el);
-        if (!bgData) return;
+        if (!bgData || !bgData.colors.length) return;
 
         const worstRatio = calculateWorstContrast(fg, bgData.colors);
 
@@ -77,15 +71,15 @@ function scanNormal(unique) {
         const passAA = isLarge ? worstRatio >= 3 : worstRatio >= 4.5;
         const passAAA = isLarge ? worstRatio >= 4.5 : worstRatio >= 7;
 
-        scannedElements.push(el);
-        const elementIndex = scannedElements.length - 1;
-
-        const key = `${rgbToHex(fg)}-${bgData.key}-normal`;
+        const key = `${rgbToHex(fg)}-${bgData.key}`;
 
         if (!unique.has(key)) {
+
+            scannedElements.push(el);
+            const elementIndex = scannedElements.length - 1;
+
             unique.set(key, {
                 index: elementIndex,
-                state: "normal",
                 tag: el.tagName.toLowerCase(),
                 text: el.textContent.trim().slice(0, 60),
                 foreground: rgbToHex(fg),
@@ -98,94 +92,27 @@ function scanNormal(unique) {
     });
 }
 
-/* ================= HOVER RULE SCAN ================= */
-
-function scanHoverRules(unique) {
-
-    for (const sheet of document.styleSheets) {
-
-        let rules;
-        try { rules = sheet.cssRules; }
-        catch { continue; }
-
-        if (!rules) continue;
-
-        for (const rule of rules) {
-
-            if (!rule.selectorText || !rule.selectorText.includes(":hover")) continue;
-
-            const baseSelector = rule.selectorText.replace(/:hover/g, "");
-
-            let elements;
-            try { elements = document.querySelectorAll(baseSelector); }
-            catch { continue; }
-
-            elements.forEach(el => {
-
-                const fg =
-                    parseColor(rule.style.color) ||
-                    parseColor(getComputedStyle(el).color);
-
-                if (!fg) return;
-
-                const bgData =
-                    extractBackgroundFromRule(rule) ||
-                    resolveBackground(el);
-
-                if (!bgData) return;
-
-                const worstRatio = calculateWorstContrast(fg, bgData.colors);
-
-                const fontSize = parseFloat(getComputedStyle(el).fontSize);
-                const fontWeight = parseInt(getComputedStyle(el).fontWeight);
-
-                const isLarge = fontSize >= 18 || (fontSize >= 14 && fontWeight >= 700);
-                const passAA = isLarge ? worstRatio >= 3 : worstRatio >= 4.5;
-                const passAAA = isLarge ? worstRatio >= 4.5 : worstRatio >= 7;
-
-                scannedElements.push(el);
-                const elementIndex = scannedElements.length - 1;
-
-                const key = `${rgbToHex(fg)}-${bgData.key}-hover`;
-
-                if (!unique.has(key)) {
-                    unique.set(key, {
-                        index: elementIndex,
-                        state: "hover",
-                        tag: el.tagName.toLowerCase(),
-                        text: el.textContent.trim().slice(0, 60),
-                        foreground: rgbToHex(fg),
-                        background: bgData.label,
-                        ratio: Number(worstRatio.toFixed(2)),
-                        passAA,
-                        passAAA
-                    });
-                }
-
-            });
-        }
-    }
-}
-
-/* ================= BACKGROUND ================= */
-
 function resolveBackground(el) {
 
     while (el) {
 
         const style = getComputedStyle(el);
 
-        if (style.backgroundImage && style.backgroundImage !== "none") {
-            return parseGradient(style.backgroundImage);
+        const bgColor = style.backgroundColor;
+        const bgImage = style.backgroundImage;
+
+        const parsedColor = parseColor(bgColor);
+
+        if (parsedColor && parsedColor.a !== 0) {
+            return {
+                colors: [parsedColor],
+                label: rgbToHex(parsedColor),
+                key: rgbToHex(parsedColor)
+            };
         }
 
-        const bg = parseColor(style.backgroundColor);
-        if (bg && bg.a !== 0) {
-            return {
-                colors: [bg],
-                label: rgbToHex(bg),
-                key: rgbToHex(bg)
-            };
+        if (bgImage && bgImage !== "none" && bgImage.includes("gradient")) {
+            return parseGradient(bgImage);
         }
 
         el = el.parentElement;
@@ -196,33 +123,20 @@ function resolveBackground(el) {
 
 function parseGradient(bgImage) {
 
-    const matches = bgImage.match(/rgba?\([^)]+\)/g);
-    const colors = matches ? matches.map(c => parseColor(c)).filter(Boolean) : [];
+    const matches = bgImage.match(/rgba?\([^)]+\)|#[0-9a-fA-F]{3,6}/g);
+
+    const colors = matches
+        ? matches.map(c => parseColor(c)).filter(Boolean)
+        : [];
+
+    if (!colors.length) return null;
 
     return {
         colors,
-        label: "gradient",
-        key: "gradient"
+        label: bgImage,
+        key: bgImage
     };
 }
-
-function extractBackgroundFromRule(rule) {
-
-    if (!rule.style) return null;
-
-    const bg = parseColor(rule.style.backgroundColor);
-    if (bg) {
-        return {
-            colors: [bg],
-            label: rgbToHex(bg),
-            key: rgbToHex(bg)
-        };
-    }
-
-    return null;
-}
-
-/* ================= CONTRAST ================= */
 
 function calculateWorstContrast(fg, bgColors) {
 
@@ -239,7 +153,8 @@ function calculateWorstContrast(fg, bgColors) {
 function contrast(fg, bg) {
     const L1 = luminance(fg);
     const L2 = luminance(bg);
-    return (Math.max(L1, L2) + 0.05) / (Math.min(L1, L2) + 0.05);
+    return (Math.max(L1, L2) + 0.05) /
+           (Math.min(L1, L2) + 0.05);
 }
 
 function luminance({ r, g, b }) {
@@ -256,20 +171,33 @@ function luminance({ r, g, b }) {
            0.0722 * convert(b);
 }
 
-/* ================= COLOR ================= */
-
 function parseColor(color) {
 
     if (!color) return null;
 
-    const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (color.startsWith("#")) {
+        let hex = color.replace("#", "");
+        if (hex.length === 3) {
+            hex = hex.split("").map(c => c + c).join("");
+        }
+        const bigint = parseInt(hex, 16);
+        return {
+            r: (bigint >> 16) & 255,
+            g: (bigint >> 8) & 255,
+            b: bigint & 255,
+            a: 1
+        };
+    }
+
+    const match = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+
     if (!match) return null;
 
     return {
         r: +match[1],
         g: +match[2],
         b: +match[3],
-        a: 1
+        a: match[4] !== undefined ? parseFloat(match[4]) : 1
     };
 }
 

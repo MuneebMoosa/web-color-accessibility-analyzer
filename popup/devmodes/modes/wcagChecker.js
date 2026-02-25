@@ -21,10 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let allResults = [];
 
-  // INITIAL STATE
   resetLeftPanel();
 
-  // ================= RUN SCAN =================
+  /* ================= RUN SCAN ================= */
+
   runBtn.addEventListener("click", () => {
 
     resetLeftPanel();
@@ -56,9 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ================= SUMMARY =================
-  function updateSummary(summary) {
+  /* ================= SUMMARY ================= */
 
+  function updateSummary(summary) {
     navChecked.textContent = summary.totalCombinations;
     statChecked.textContent = summary.totalCombinations;
     statPass.textContent = summary.passAA;
@@ -66,16 +66,15 @@ document.addEventListener("DOMContentLoaded", () => {
     statAAA.textContent = summary.passAAA;
   }
 
-  // ================= RENDER RESULTS =================
+  /* ================= RENDER RESULTS ================= */
+
   function renderResults(results) {
 
     resultsList.innerHTML = "";
 
     if (!results.length) {
       resultsList.innerHTML =
-        `<div style="padding:20px;color:#6B7280;">
-          No issues found
-        </div>`;
+        `<div style="padding:20px;color:#6B7280;">No issues found</div>`;
       return;
     }
 
@@ -90,13 +89,15 @@ document.addEventListener("DOMContentLoaded", () => {
         </div>
         <span class="result-ratio">${result.ratio}:1</span>
         <div class="result-info">
-          <div class="result-name">${result.tag}</div>
+          <div class="result-name">
+            ${result.tag}
+            <span> (${result.text || ""})</span>
+          </div>
         </div>
       `;
 
       item.addEventListener("click", () => {
 
-        // REMOVE previous active
         document.querySelectorAll(".result-item")
           .forEach(el => el.classList.remove("active"));
 
@@ -116,18 +117,13 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // ================= LEFT PANEL UPDATE =================
+  /* ================= LEFT PANEL ================= */
+
   function updateLeftPanel(result) {
 
-    leftPanel.classList.remove("inactive");
+    leftPanel.classList.remove("inactive", "pass", "fail");
     leftPanel.classList.add("active");
-    leftPanel.classList.remove("pass", "fail");
-
-    if (result.passAA) {
-      leftPanel.classList.add("pass");
-    } else {
-      leftPanel.classList.add("fail");
-    }
+    leftPanel.classList.add(result.passAA ? "pass" : "fail");
 
     ratioValue.textContent = result.ratio + " : 1";
     statusBadge.textContent = result.passAA ? "Pass" : "Fail";
@@ -144,7 +140,6 @@ document.addEventListener("DOMContentLoaded", () => {
     hexes[1].textContent = result.background;
   }
 
-  // ================= RESET LEFT PANEL =================
   function resetLeftPanel() {
 
     leftPanel.classList.remove("active", "pass", "fail");
@@ -161,13 +156,17 @@ document.addEventListener("DOMContentLoaded", () => {
     hexes[1].textContent = "--";
   }
 
-  // ================= SORT =================
+  /* ================= SORT ================= */
+
   sortSelect.addEventListener("change", () => {
 
     const mode = sortSelect.value;
     let filtered = [];
 
-    if (mode === "pass") {
+    if (mode === "default") {
+      filtered = [...allResults];
+    }
+    else if (mode === "pass") {
       filtered = allResults.filter(r => r.passAA);
     }
     else if (mode === "fail") {

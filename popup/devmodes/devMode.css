@@ -38,7 +38,7 @@ body {
 .btn-wrapper {
   position: relative; 
   height: 100px;
-  width: 200px;
+  width: 250px;
   padding: 10px;
   background: var(--secondary-bg);
   border: 1px solid var(--border-color);
@@ -76,18 +76,15 @@ body {
   border: none;
   border-radius: 8px;
   font-weight: 600;
-  font-size: 14px;
   cursor: pointer;
   transition: 0.2s ease;
 }
-/* .contrast-btn{
-  padding: 10px;
-} */
-
+.devmode-btn span{
+  font-size: 14px;
+}
 .devmode-btn:hover {
   background: var(--accent-blue-hover);
 }
-
 
 .info-icon {
   position: absolute;
