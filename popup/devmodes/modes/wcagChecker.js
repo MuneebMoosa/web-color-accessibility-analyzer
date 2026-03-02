@@ -19,12 +19,37 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const leftPanel = document.querySelector(".left-panel");
 
+  const clearBtn = document.getElementById("clearScanBtn");
+  clearBtn.style.display = "none";
+
   let allResults = [];
 
   resetLeftPanel();
 
-  /* ================= RUN SCAN ================= */
+  /* ================= CLEAR SCAN ================= */
+  clearBtn.addEventListener("click", () => {
+        resetLeftPanel();
 
+        // Reset summary numbers
+        navChecked.textContent = "0";
+        statChecked.textContent = "0";
+        statPass.textContent = "0";
+        statFail.textContent = "0";
+        statAAA.textContent = "0";
+
+        // Clear results
+        allResults = [];
+        resultsList.innerHTML = `
+          <div style="text-align:center;padding:20px;color:#6B7280;">
+            Click "Run Scan" to analyze page
+          </div>
+        `;
+
+        // Hide Clear button again
+        clearBtn.style.display = "none";
+  })
+  /* ================= RUN SCAN ================= */
+  
   runBtn.addEventListener("click", () => {
 
     resetLeftPanel();
@@ -48,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
           if (!response) return;
 
           allResults = response.results;
-
+          clearBtn.style.display = "inline-block";
           updateSummary(response.summary);
           renderResults(allResults);
         }

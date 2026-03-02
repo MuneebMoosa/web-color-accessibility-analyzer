@@ -72,6 +72,10 @@ body {
   background: var(--red);
   color: var(--text-white);
 }
+.clear-scanner-btn{
+  background: var(--text-secondary);
+  color: var(--text-primary);
+}
 
 .nav-checked {
   background: rgba(255,255,255,0.12);

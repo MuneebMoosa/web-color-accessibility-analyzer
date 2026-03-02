@@ -1,4 +1,3 @@
-console.log("WCAG content script loaded");
 
 let scannedElements = [];
 
