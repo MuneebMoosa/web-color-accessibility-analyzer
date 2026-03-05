@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>WCAG Contrast Analysis</title>
-  <link rel="stylesheet" href="wcagChecker.css">
+  <link rel="stylesheet" href="autoChecker.css">
 </head>
 <body>
 
@@ -125,21 +125,22 @@
         <div class="tips-label">💡 Contrast Tips</div>
         <div class="tips-items">
           <div class="tip-chip">
-            <span class="check-green">✔</span>
-            AAA Normal: <strong style="margin-left:3px">7:1</strong>
-          </div>
-          <div class="tip-chip">
-            <span class="check-green">✔</span>
-            AA Large: <span class="ratio-val" style="margin-left:3px">3.0:1</span>
-          </div>
-          <div class="tip-chip">
             <span class="check-purple">✔</span>
-            AAA Large: <span class="ratio-val-purple" style="margin-left:3px">4.5:1</span>
+            AAA Normal: <span class="ratio-val-purple" style="margin-left:3px">7.0:1</span>
           </div>
           <div class="tip-chip">
-            <span class="check-purple">✔</span>
-            AAA Normal: <span class="ratio-val-purple" style="margin-left:3px">4.5:1</span>
-          </div>
+          <span class="check-purple">✔</span>
+          AAA Large: <span class="ratio-val-purple" style="margin-left:3px">4.5:1</span>
+        </div>
+        <div class="tip-chip">
+          <span class="check-green">✔</span>
+          AA Normal: <span class="ratio-val" style="margin-left:3px">4.5:1</span>
+        </div>
+        <div class="tip-chip">
+          <span class="check-green">✔</span>
+          AA Large: <span class="ratio-val" style="margin-left:3px">3.0:1</span>
+        </div>
+         
         </div>
       </div>
 
@@ -147,6 +148,6 @@
   </div>
 </div>
 
-<script src="wcagChecker.js"></script>
+<script src="autoChecker.js"></script>
 </body>
 </html>

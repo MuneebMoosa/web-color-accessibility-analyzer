@@ -2,13 +2,16 @@
 let scannedElements = [];
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-
+    
     if (request.type === "RUN_WCAG_SCAN") {
         const results = runScan();
         sendResponse(results);
         return true;
     }
-
+    // clear scan need  to improve
+    if (request.type === "CLEAR_HIGHLIGHT"){
+        scannedElements.forEach(el => el.style.outline = "");
+    }
     if (request.type === "HIGHLIGHT_ELEMENT") {
 
         scannedElements.forEach(el => el.style.outline = "");

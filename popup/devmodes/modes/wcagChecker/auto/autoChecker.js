@@ -44,7 +44,12 @@ document.addEventListener("DOMContentLoaded", () => {
             Click "Run Scan" to analyze page
           </div>
         `;
-
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(
+            tabs[0].id,
+            { type: "CLEAR_HIGHLIGHT" }
+          );
+        });
         // Hide Clear button again
         clearBtn.style.display = "none";
   })
