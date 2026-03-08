@@ -77,7 +77,7 @@ buttons.forEach(button => {
               });
             });
 
-            window.close(); // close popup after selection
+           // window.close(); // close popup after selection
         });
     })
   })

@@ -27,10 +27,23 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  gap: 30px;
-
+  gap: 25px;
+  position: relative;
+}
+.devmode-container .back-btn{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;   
+  gap: 4px;
+  color: var(--primary-text);
+  text-decoration: none;
+  font-weight: bold;
+  height: 30px;
 }
 .devmode-container .main-heading{
+  margin-top: 25px;
   font-weight: bold;
   font-size: 17px;
   text: center;

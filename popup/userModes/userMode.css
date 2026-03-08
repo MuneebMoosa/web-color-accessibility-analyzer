@@ -33,6 +33,19 @@ body {
   align-items: center;
   justify-content: space-evenly;
   flex-direction: column;
+  position: relative;
+}
+.usermode-container .back-btn{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;   
+  gap: 4px;
+  color: var(--primary-text);
+  text-decoration: none;
+  font-weight: bold;
+  height: 30px;
 }
 .usermode-container p{
   font-weight: bold;
