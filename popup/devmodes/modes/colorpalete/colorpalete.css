@@ -24,26 +24,43 @@ body {
   color: var(--text);
   overflow-x: hidden;
 }
+/* ── Main container & back button ── */
+.main-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-container .back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--text);
+  text-decoration: none;
+  font-weight: bold;
+  height: 30px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  margin-top: 10px;
+}
+.main-container .back-btn svg {
+  flex-shrink: 0;
+}
 
 /*Header*/
 .header {
-  padding: 20px 20px 16px;
-  border-bottom: 1px solid var(--border);
+  padding: 0px 20px 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--surface);
 }
 
-.logo-row { display: flex; align-items: center; gap: 10px; }
 
-.logo-icon {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  background: #2563EB;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-  flex-shrink: 0;
+.logo-row { 
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
 }
 
 .app-title {
@@ -83,11 +100,17 @@ body {
 }
 
 /*Main body*/
-.body { padding: 0; }
+.body { 
+  padding: 0; 
+}
 
 /*Panel*/
-.panel { display: none; }
-.panel.active { display: block; }
+.panel {
+   display: none;
+ }
+.panel.active {
+   display: block; 
+}
 
 /*Extract Panel*/
 .extract-hero {
@@ -164,14 +187,27 @@ body {
   margin: 4px 0;
 }
 
-.divider-line { flex: 1; height: 1px; background: var(--border); }
-.divider-label { font-size: 11px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+.divider-line { 
+  flex: 1; 
+  height: 1px; 
+  background: var(--border); 
+}
+.divider-label { 
+  font-size: 11px; 
+  color: var(--muted); 
+  letter-spacing: 0.08em; 
+  text-transform: uppercase; 
+}
 
 /*Color Grid*/
-.colors-section { padding: 0 20px 20px; }
+.colors-section { 
+  padding: 0 20px 20px;
+ }
 
 .section-row {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
   margin-bottom: 12px;
 }
 
@@ -218,7 +254,7 @@ body {
 
 .color-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 8px;
   max-height: 220px;
   overflow-y: auto;
@@ -320,7 +356,9 @@ body {
 }
 
 .palette-card-row {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; 
+  align-items: center; 
+  justify-content: space-between;
   margin-bottom: 10px;
 }
 
@@ -338,7 +376,10 @@ body {
 }
 
 .palette-swatches {
-  display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
+  display: flex; 
+  gap: 6px; 
+  align-items: center; 
+  flex-wrap: wrap;
 }
 
 .mini-swatch {

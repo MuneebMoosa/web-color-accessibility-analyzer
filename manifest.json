@@ -4,10 +4,10 @@
   "description": "Provides one-click visual assistance to improve color contrast and readability for color-blind users.",
   "version" : "1.0.0",
 
-  "permissions": ["storage" , "tabs", "scripting"],
+  "permissions": ["storage" , "tabs", "scripting", "activeTab"],
 
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "popup/devmodes/modes/colorpalete/colorpalete.html",
     "default_title": "Color Accessibility Assistant"
   },
 
@@ -22,7 +22,8 @@
     "matches": ["<all_urls>"],
     "js": ["contentscripts/contentScript.js",
            "contentscripts/simulationLogic.js",
-           "contentscripts/wcagCheckerLogic.js"],
+           "contentscripts/wcagCheckerLogic.js",
+           "contentscripts/colorPaleteLogic.js"],
     "run_at": "document_idle"
   }
 ],
