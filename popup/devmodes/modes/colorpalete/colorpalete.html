@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Palette Extractor</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="colorpalete.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo-row">
+      <div class="logo-icon">🎨</div>
+      <span class="app-title">Color Palette Extractor</span>
+    </div>
+    <div class="tab-row">
+      <button class="tab-btn active" data-tab="extract">Extract</button>
+      <button class="tab-btn" data-tab="saved">Saved</button>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="body">
+
+    <!-- Extract Panel -->
+    <div class="panel active" id="panel-extract">
+
+      <!-- Hero -->
+      <div class="extract-hero">
+        <div class="hero-title">Extract Page Colors</div>
+        <div class="hero-sub">Scan this page and pull every unique color used in the design.</div>
+        <button class="extract-btn" id="extractBtn">
+          <span class="btn-text">Extract Colors</span>
+          <span class="btn-shimmer"></span>
+        </button>
+      </div>
+
+      <!-- Colors result -->
+      <div id="colorsResult" style="display:none">
+        <div class="divider">
+          <div class="divider-line"></div>
+          <div class="divider-label">Extracted</div>
+          <div class="divider-line"></div>
+        </div>
+        <div class="colors-section">
+          <div class="section-row">
+            <span class="section-label" id="colorCount">0 colors</span>
+            <button class="save-palette-btn" id="savePaletteBtn">
+              <span>⬡</span> Save Palette
+            </button>
+          </div>
+          <div class="color-grid" id="colorGrid"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Saved Panel -->
+    <div class="panel" id="panel-saved">
+      <div class="saved-panel">
+        <div class="section-row" style="margin-bottom:14px">
+          <span class="section-label">Saved Palettes</span>
+          <span class="section-label" id="savedCount" style="color:var(--accent)">0</span>
+        </div>
+        <div id="savedList"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">✓ Copied!</div>
+
+  <script src="colorpalete.js"></script>
+</body>
+</html>
