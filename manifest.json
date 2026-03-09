@@ -6,6 +6,9 @@
 
   "permissions": ["storage" , "tabs", "scripting", "activeTab"],
 
+"host_permissions": [
+  "<all_urls>"
+],
   "action": {
     "default_popup": "popup/devmodes/modes/colorpalete/colorpalete.html",
     "default_title": "Color Accessibility Assistant"
@@ -16,7 +19,16 @@
   "48": "icons/seeeasy.png",
   "128": "icons/seeeasy.png"
   },
-
+"web_accessible_resources": [
+  {
+    "resources": [
+      "popup/devmodes/modes/wcagChecker/manual/manualChecker.html",
+      "popup/devmodes/modes/wcagChecker/manual/manualChecker.js",
+      "popup/devmodes/modes/wcagChecker/manual/manualChecker.css"
+    ],
+    "matches": ["<all_urls>"]
+  }
+],
   "content_scripts": [
   {
     "matches": ["<all_urls>"],

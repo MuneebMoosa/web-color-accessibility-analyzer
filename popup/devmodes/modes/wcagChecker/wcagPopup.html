@@ -9,9 +9,22 @@
  </head>
  <body>
   <a href="../wcagChecker/auto/autoChecker.html">
-      <div>
-        newButton
-      </div>
+   <div class="nav-wrapper">
+  <button type="button" class="btn-minimal" aria-label="Proceed to next step">
+    Continue
+  </button>
+</div>
   </a>
+ <div class="contrast-details-panel">
+    <p>Foreground: <span id="current-fg">#1A1A1A</span></p>
+    <p>Background: <span id="current-bg">#202122</span></p>
+    
+    <button id="btn-manual-check">Verify Manually</button>
+     <a href="../wcagChecker/manual/manualChecker.html"></a>
+</div>
+
+<script src="wcagCheckerLogic.js"></script>
+</body>
+</html>
  </body>
  </html>

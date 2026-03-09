@@ -1,0 +1,68 @@
+body {
+    background-color: #ffe66b; /* The yellow from your screenshot */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #222222;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+}
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.ratio-display {
+    font-size: 3rem;
+    font-weight: bold;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.badges {
+    display: flex;
+    gap: 8px;
+}
+
+.badge {
+    background: #222222;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+.badge.fail {
+    opacity: 0.4;
+    text-decoration: line-through;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-bottom: 40px;
+}
+
+input {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #222222;
+    font-size: 2rem;
+    width: 100%;
+    outline: none;
+}
+
+.preview-text.large { font-size: 24px; font-weight: bold; }
+.preview-text.normal { font-size: 16px; }
