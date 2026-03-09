@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colour Contrast Checker</title>
+    <link rel="stylesheet" href="manualChecker.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Colour Contrast Checker</h1>
+            <div class="ratio-display">
+                <span id="ratio-text">Aa</span>
+                <span id="ratio-value">21.00</span>
+            </div>
+            <div class="badges">
+                <div class="badge" id="aa-large">Pass <small>AA Large</small></div>
+                <div class="badge" id="aaa-large">Pass <small>AAA Large</small></div>
+                <div class="badge" id="aa-normal">Pass <small>AA Normal</small></div>
+                <div class="badge" id="aaa-normal">Pass <small>AAA Normal</small></div>
+            </div>
+        </header>
+
+        <main>
+            <div class="input-group">
+                <label>Background Colour</label>
+                <input type="text" id="bg-hex" value="#ffe66b">
+            </div>
+            <div class="input-group">
+                <label>Foreground Colour</label>
+                <input type="text" id="fg-hex" value="#222222">
+            </div>
+        </main>
+
+        <footer>
+            <h3>Example Copy</h3>
+            <p class="preview-text large">Large Text - 18pt/24px</p>
+            <p class="preview-text normal">Normal Text - 16px</p>
+        </footer>
+    </div>
+    <script src="manualChecker.js"></script>
+   
+</body>
+</html>

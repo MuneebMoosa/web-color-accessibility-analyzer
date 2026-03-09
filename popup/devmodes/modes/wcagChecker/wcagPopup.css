@@ -1,0 +1,35 @@
+.nav-wrapper {
+  display: inline-block;
+  padding: 5px;
+}
+
+.btn-minimal {
+  /* Remove backgrounds */
+  background: transparent;
+  background-color: rgba(0, 0, 0, 0); 
+  
+  /* Compact Sizing */
+  padding: 6px 14px; 
+  font-size: 14px;
+  
+  /* Borders and Text */
+  border: 1.5px solid #005a9c; /* High contrast blue border */
+  color: #005a9c;
+  border-radius: 4px;
+  
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Hover effect: Subtle fill */
+.btn-minimal:hover {
+  background-color: #005a9c;
+  color: #ffffff;
+}
+
+/* WCAG Requirement: Distinct Focus State */
+.btn-minimal:focus {
+  outline: 2px solid #ffbf47; 
+  outline-offset: 3px;
+}

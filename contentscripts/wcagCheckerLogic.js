@@ -210,3 +210,8 @@ function rgbToHex({ r, g, b }) {
         .join("")
         .toUpperCase();
 }
+// Function to handle clicking a result
+// Add this to wcagCheckerLogic.js (or your main popup script)
+// Ensure this ID matches the one in your HTML
+// Use a more robust way to attach the event
+
