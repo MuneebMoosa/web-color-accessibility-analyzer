@@ -7,39 +7,80 @@
     <link rel="stylesheet" href="manualChecker.css">
 </head>
 <body>
+    <a class="nav-btn close-btn" id="close-btn" title="Close window">
+        Close
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+    </a>
+
     <div class="container">
         <header>
-            <h1>Colour Contrast Checker</h1>
-            <div class="ratio-display">
+            <h1>Manual Contrast Checker</h1>
+            <div class="ratio-row">
                 <span id="ratio-text">Aa</span>
-                <span id="ratio-value">21.00</span>
+                <span id="ratio-value">21.00:1</span>
             </div>
             <div class="badges">
-                <div class="badge" id="aa-large">Pass <small>AA Large</small></div>
-                <div class="badge" id="aaa-large">Pass <small>AAA Large</small></div>
-                <div class="badge" id="aa-normal">Pass <small>AA Normal</small></div>
-                <div class="badge" id="aaa-normal">Pass <small>AAA Normal</small></div>
+                <div class="badge" id="aa-large"><b>Pass ✔</b> AA Large </div>
+                <div class="badge" id="aaa-large"><b>Pass ✔</b> AAA Large</div>
+                <div class="badge" id="aa-normal"><b>Pass ✔</b> AA Normal</div>
+                <div class="badge" id="aaa-normal"><b>Pass ✔</b> AAA Normal</div>
             </div>
         </header>
-
-        <main>
+        <hr class="divider">
+        <div class="inputs-grid">
             <div class="input-group">
-                <label>Background Colour</label>
-                <input type="text" id="bg-hex" value="#ffe66b">
+                <label>Background</label>
+                <div class="input-row">
+                    <div class="color-swatch" id="bg-swatch">
+                        <input type="color" id="bg-picker" value="#ffe66b">
+                    </div>
+                    <input type="text" class="hex-input" id="bg-hex" value="#ffe66b" spellcheck="false" maxlength="7">
+                    <button class="pen-btn" onclick="document.getElementById('bg-hex').focus()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                    </button>
+                    <button class="copy-btn" onclick="copyHex('bg-hex', this)" title="Copy hex">
+                        <span class="copied-tip">Copied!</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <div class="input-group">
-                <label>Foreground Colour</label>
-                <input type="text" id="fg-hex" value="#222222">
-            </div>
-        </main>
 
-        <footer>
-            <h3>Example Copy</h3>
-            <p class="preview-text large">Large Text - 18pt/24px</p>
-            <p class="preview-text normal">Normal Text - 16px</p>
-        </footer>
+            <div class="input-group">
+                <label>Foreground</label>
+                <div class="input-row">
+                    <div class="color-swatch" id="fg-swatch">
+                        <input type="color" id="fg-picker" value="#222222">
+                    </div>
+                    <input type="text" class="hex-input" id="fg-hex" value="#222222" spellcheck="false" maxlength="7">
+                    <button class="pen-btn" onclick="document.getElementById('fg-hex').focus()">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                    </button>
+                    <button class="copy-btn" onclick="copyHex('fg-hex', this)" title="Copy hex">
+                        <span class="copied-tip">Copied!</span>
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <p class="disclaimer"><span>Disclaimer : </span>To use another feataures of extension close this page and reopen the extension</p>
+
     <script src="manualChecker.js"></script>
-   
 </body>
 </html>

@@ -1,35 +1,101 @@
-.nav-wrapper {
-  display: inline-block;
-  padding: 5px;
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
 }
 
-.btn-minimal {
-  /* Remove backgrounds */
-  background: transparent;
-  background-color: rgba(0, 0, 0, 0); 
-  
-  /* Compact Sizing */
-  padding: 6px 14px; 
-  font-size: 14px;
-  
-  /* Borders and Text */
-  border: 1.5px solid #005a9c; /* High contrast blue border */
-  color: #005a9c;
-  border-radius: 4px;
-  
-  font-weight: 600;
+body{
+  width:340px;
+  height:350px;
+  font-family: Arial, sans-serif;
+}
+
+.main-container{
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  gap:20px;
+  position: relative;
+}
+.back-btn{
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  align-items: center;   
+  gap: 4px;
+  color: var(--primary-text);
+  text-decoration: none;
+  font-weight: bold;
+  height: 30px;
+}
+
+.btn-wrapper{
+  position:relative;
+  display:flex;
+  justify-content:center;
+}
+
+/* button */
+.btn{
+  width:150px;
+  height:50px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-decoration:none;
+  background:#0056b3;
+  color:white;
+  border-radius:6px;
+  font-weight:bold;
+  font-size:14px;
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-/* Hover effect: Subtle fill */
-.btn-minimal:hover {
-  background-color: #005a9c;
-  color: #ffffff;
+/* info icon bottom-right */
+.info-icon{
+  position:absolute;
+  bottom:-8px;
+  right:3px;
+  width:20px;
+  height:20px;
+  background:white;
+  border-radius:50%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  cursor:pointer;
+  border:1px solid #ffff;
 }
 
-/* WCAG Requirement: Distinct Focus State */
-.btn-minimal:focus {
-  outline: 2px solid #ffbf47; 
-  outline-offset: 3px;
+/* popup above button */
+.info-popup{
+  position:absolute;
+  width:210px;
+  background:#222;
+  color:white;
+  padding:8px;
+  font-size:12px;
+  border-radius:6px;
+  opacity:0;
+  pointer-events:none;
+  transition:0.2s;
+}
+
+/* AUTO popup above */
+.info-popup.auto{
+  bottom:60px;
+  right:50;
+}
+
+/* MANUAL popup below */
+.info-popup.manual{
+  top:60px;
+  left:50;
+}
+/* show popup */
+.info-icon:hover + .info-popup{
+  opacity:1;
 }
