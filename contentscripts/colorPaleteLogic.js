@@ -1,9 +1,12 @@
+// ─── content.js ───────────────────────────────────────────────────────────────
+
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
+  // ── GET_CSS_COLORS ────────────────────────────────────────────────────────────
   if (request.type === "GET_CSS_COLORS") {
 
     const elements = document.querySelectorAll("*");
-    const colors = new Set();
+    const freqMap  = new Map();
 
     elements.forEach(el => {
 
@@ -12,10 +15,16 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const props = [
         style.color,
         style.backgroundColor,
-        style.borderColor,
+        style.borderTopColor,
+        style.borderBottomColor,
+        style.borderLeftColor,
+        style.borderRightColor,
         style.outlineColor,
-        style.fill   && style.fill.startsWith("rgb")   ? style.fill   : null,
-        style.stroke && style.stroke.startsWith("rgb") ? style.stroke : null,
+        style.fill            && style.fill.startsWith("rgb")   ? style.fill   : null,
+        style.stroke          && style.stroke.startsWith("rgb") ? style.stroke : null,
+        style.caretColor,
+        style.textDecorationColor,
+        style.columnRuleColor,
       ];
 
       props.forEach(c => {
@@ -30,42 +39,42 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         const g = parseInt(nums[1]);
         const b = parseInt(nums[2]);
 
+        // skip fully / nearly transparent
         const a = nums.length >= 4 ? parseFloat(nums[3]) : 1;
-        if (a === 0) return;
+        if (a < 0.15) return;
 
-        // skip near-white
-        if (r > 240 && g > 240 && b > 240) return;
-
-        // skip near-black
-        if (r < 20 && g < 20 && b < 20) return;
-
-        // skip grey/neutral — same filter as pixel extraction
+        // skip only true greys — no hue at all
         const chroma = Math.max(r, g, b) - Math.min(r, g, b);
-        if (chroma < 30) return;
+        if (chroma < 12) return;
 
-        const hex = "#" + [r, g, b]
-          .map(v => Math.min(255, v).toString(16).padStart(2, "0"))
-          .join("")
-          .toUpperCase();
-
-        colors.add(hex);
+        const hex = cssRgbToHex(r, g, b);
+        freqMap.set(hex, (freqMap.get(hex) || 0) + 1);
 
       });
 
     });
 
-    console.log('CSS colors extracted:', [...colors]); // remove after testing
-    sendResponse([...colors]);
+    // sort by frequency (most dominant first)
+    // EXACT dedup only — all distinct shades preserved as designer intended
+    const cssColors = Array
+      .from(freqMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .map(([hex]) => hex)
+      .slice(0, 24);
+
+    sendResponse(cssColors);
     return true;
 
   }
 
+  // ── SCROLL_PAGE ───────────────────────────────────────────────────────────────
   if (request.type === "SCROLL_PAGE") {
-    window.scrollBy({ top: window.innerHeight, behavior: "instant" });
-    sendResponse(true);
+    window.scrollBy({ top: window.innerHeight * 0.9, behavior: "instant" });
+    sendResponse({ scrollY: window.scrollY, pageHeight: document.body.scrollHeight });
     return true;
   }
 
+  // ── SCROLL_TOP ────────────────────────────────────────────────────────────────
   if (request.type === "SCROLL_TOP") {
     window.scrollTo({ top: 0, behavior: "instant" });
     sendResponse(true);
@@ -73,3 +82,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 
 });
+
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function cssRgbToHex(r, g, b) {
+  return "#" + [r, g, b]
+    .map(v => Math.min(255, Math.max(0, v)).toString(16).padStart(2, "0"))
+    .join("")
+    .toUpperCase();
+}

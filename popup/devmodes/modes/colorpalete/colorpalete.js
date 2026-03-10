@@ -1,9 +1,14 @@
-// ─── State ───────────────────────────────────────────────────────────────
+// ─── popup.js ─────────────────────────────────────────────────────────────────
+
+// ─── State ────────────────────────────────────────────────────────────────────
 let currentColors = [];
 let savedPalettes = JSON.parse(localStorage.getItem('palettix_saved') || '[]');
 
+const MAX_COLORS   = 24;
+const SCR_SIM_DIST = 40; // similarity threshold — screenshot internal dedup + CSS vs screenshot
 
-// ─── Extract Button ──────────────────────────────────────────────────────
+
+// ─── Extract Button ───────────────────────────────────────────────────────────
 document.getElementById('extractBtn').addEventListener('click', async () => {
 
   const btn = document.getElementById('extractBtn');
@@ -12,20 +17,35 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
 
   try {
 
-    // Step 1 — Extract CSS colors (exact, highest priority)
-    const cssColorsRaw = await extractCSSColors();
+    // ── Step 1: Get CSS colors ─────────────────────────────────────────────────
+    // content.js returns frequency-sorted, exact-deduped, capped at 24.
+    // All distinct shades preserved — no similarity removal within CSS.
+    const cssColors = await extractCSSColors();
 
-    // Step 2 — Deduplicate CSS colors (same existing distance < 40)
-    const cssColors = removeDuplicateColors(cssColorsRaw);
+    // ── Step 2: CSS already at cap — skip screenshot entirely ─────────────────
+    if (cssColors.length >= MAX_COLORS) {
+      currentColors = cssColors;
+      renderColors(currentColors);
+      btn.querySelector('.btn-text').textContent = 'Re-extract';
+      btn.classList.remove('loading');
+      return;
+    }
 
-    // Step 3 — Extract screenshot pixel colors across 4 viewports
-    const screenColors = await captureAndExtract();
+    // ── Step 3: Capture screenshots across up to 4 viewport positions ─────────
+    const rawScreenColors = await captureAndExtract();
 
-    // Step 4 — Merge: CSS first, screenshot fills gaps, final dedup, fallback
-    const colors = mergeColorSources(cssColors, screenColors);
+    // ── Step 4: Similarity-dedup screenshot colors among themselves ────────────
+    // Pixel sampling is noisy — closely matched shades collapsed to one.
+    // CSS is NOT similarity-deduped — all its shades are kept as-is.
+    const screenColors = removeSimilar(rawScreenColors, SCR_SIM_DIST);
 
-    currentColors = colors;
-    renderColors(colors);
+    // ── Step 5: Merge ──────────────────────────────────────────────────────────
+    // CSS is the base. Fill remaining slots with screenshot colors that are
+    // not similar to any CSS color. If CSS is empty, use screenshot only.
+    const merged = mergeColorSources(cssColors, screenColors);
+
+    currentColors = merged;
+    renderColors(currentColors);
 
     btn.querySelector('.btn-text').textContent = 'Re-extract';
 
@@ -42,149 +62,113 @@ document.getElementById('extractBtn').addEventListener('click', async () => {
 });
 
 
-// ─── Step 1: Extract CSS Colors via content script ───────────────────────
+// ─── Step 1: Extract CSS Colors via content script ────────────────────────────
 function extractCSSColors() {
-
   return new Promise((resolve) => {
-
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-
       chrome.tabs.sendMessage(
         tabs[0].id,
         { type: "GET_CSS_COLORS" },
         (response) => {
-
-          if (chrome.runtime.lastError) {
+          if (chrome.runtime.lastError || !response) {
             resolve([]);
             return;
           }
-
-          resolve(response || []);
-
+          resolve(response);
         }
       );
-
     });
-
   });
-
 }
 
 
-// ─── Step 3: Scroll + Multi-Screenshot Extraction ────────────────────────
+// ─── Step 3: Scroll + Multi-Screenshot Capture ────────────────────────────────
 async function captureAndExtract() {
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-  // scroll to top first
   await chrome.tabs.sendMessage(tab.id, { type: "SCROLL_TOP" }).catch(() => {});
   await sleep(300);
 
-  let allColors = [];
+  const allColors   = [];
+  let   lastScrollY = -1;
 
-  // capture 4 viewport positions down the page
   for (let i = 0; i < 4; i++) {
 
     try {
-
-      const dataUrl = await chrome.tabs.captureVisibleTab(
-        tab.windowId,
-        { format: 'png' }
-      );
-
-      const colors = await extractColorsFromImage(dataUrl);
+      const dataUrl = await chrome.tabs.captureVisibleTab(tab.windowId, { format: 'png' });
+      const colors  = await extractColorsFromImage(dataUrl);
       allColors.push(...colors);
-
     } catch (e) {
       // skip failed capture
     }
 
-    await chrome.tabs.sendMessage(tab.id, { type: "SCROLL_PAGE" }).catch(() => {});
+    // scroll and check if we actually moved — stop early if at page bottom
+    const scrollResp = await chrome.tabs.sendMessage(
+      tab.id, { type: "SCROLL_PAGE" }
+    ).catch(() => null);
+
     await sleep(350);
+
+    if (scrollResp && scrollResp.scrollY !== undefined) {
+      if (scrollResp.scrollY === lastScrollY) break; // hit page bottom
+      lastScrollY = scrollResp.scrollY;
+    }
 
   }
 
-  // scroll back to top
   await chrome.tabs.sendMessage(tab.id, { type: "SCROLL_TOP" }).catch(() => {});
 
-  return removeDuplicateColors(allColors);
+  return allColors;
 
 }
 
 
-// ─── Extract Colors From a Single Screenshot ──────────────────────────────
+// ─── Extract Colors From a Single Screenshot ──────────────────────────────────
 function extractColorsFromImage(dataUrl) {
-
   return new Promise((resolve) => {
-
     const img = new Image();
-
     img.onload = () => {
-
-      const canvas = document.createElement('canvas');
-      const ctx    = canvas.getContext('2d');
-
-      const scale = 0.5;
-
+      const canvas  = document.createElement('canvas');
+      const ctx     = canvas.getContext('2d');
+      const scale   = 0.5;
       canvas.width  = img.width  * scale;
       canvas.height = img.height * scale;
-
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-      resolve(extractDominantColors(imageData));
-
+      resolve(extractDominantColors(ctx.getImageData(0, 0, canvas.width, canvas.height)));
     };
-
     img.onerror = () => resolve([]);
     img.src = dataUrl;
-
   });
-
 }
 
 
-// ─── Dominant Color Extraction from Pixels ───────────────────────────────
+// ─── Dominant Color Extraction from Pixels ────────────────────────────────────
 function extractDominantColors(imageData) {
 
-  const data   = imageData.data;
-  const width  = imageData.width;
-  const height = imageData.height;
-
+  const { data, width, height } = imageData;
   const colorMap = new Map();
 
-  const step   = 4;
-  const bucket = 16;
+  const step   = 4;  // sample every 4th pixel
+  const bucket = 20; // quantise to reduce per-pixel noise
 
   for (let y = 0; y < height; y += step) {
     for (let x = 0; x < width; x += step) {
 
-      const index = (y * width + x) * 4;
+      const i = (y * width + x) * 4;
+      const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
 
-      const r = data[index];
-      const g = data[index + 1];
-      const b = data[index + 2];
-      const a = data[index + 3];
-
+      // skip transparent pixels
       if (a < 200) continue;
 
-      // same filters as CSS extraction — no change
-      if (r > 240 && g > 240 && b > 240) continue; // near-white
-      if (r < 20  && g < 20  && b < 20)  continue; // near-black
-
+      // skip only true greys — no meaningful hue
       const chroma = Math.max(r, g, b) - Math.min(r, g, b);
-      if (chroma < 30) continue; // grey/neutral
+      if (chroma < 12) continue;
 
-      const rr = Math.round(r / bucket) * bucket;
-      const gg = Math.round(g / bucket) * bucket;
-      const bb = Math.round(b / bucket) * bucket;
-
-      const hex = rgbToHex(
-        Math.min(255, rr),
-        Math.min(255, gg),
-        Math.min(255, bb)
-      );
+      const rq  = Math.min(255, Math.round(r / bucket) * bucket);
+      const gq  = Math.min(255, Math.round(g / bucket) * bucket);
+      const bq  = Math.min(255, Math.round(b / bucket) * bucket);
+      const hex = rgbToHex(rq, gq, bq);
 
       colorMap.set(hex, (colorMap.get(hex) || 0) + 1);
 
@@ -192,115 +176,87 @@ function extractDominantColors(imageData) {
   }
 
   // sort by frequency — most dominant first
-  const sorted = Array.from(colorMap.entries()).sort((a, b) => b[1] - a[1]);
-
-  const finalColors = [];
-
-  for (const [hex] of sorted) {
-    if (!isSimilarColor(hex, finalColors)) {
-      finalColors.push(hex);
-    }
-  }
-
-  return finalColors;
+  return Array
+    .from(colorMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([hex]) => hex);
 
 }
 
 
-// ─── Step 2: Remove Duplicate Colors ────────────────────────────────────
-function removeDuplicateColors(colors) {
-
-  const unique = [];
-
-  for (const c of colors) {
-    if (!isSimilarColor(c, unique)) unique.push(c);
-  }
-
-  return unique;
-
-}
-
-
-// ─── Step 4: Merge CSS + Screenshot ──────────────────────────────────────
+// ─── Step 5: Merge CSS + Screenshot ───────────────────────────────────────────
+//
+//  Case A  CSS === 24  → early return before this is called (Step 2)
+//  Case B  CSS === 0   → screenshot only, already similarity-deduped, cap at 24
+//  Case C  CSS is 1–23 → CSS is base; fill remaining slots with screenshot
+//                        colors not similar to any CSS color
+//
 function mergeColorSources(cssColors, screenColors) {
 
-  // CSS colors go first — they are exact, highest priority
+  // Case B — no CSS at all
+  if (cssColors.length === 0) {
+    return screenColors.slice(0, MAX_COLORS);
+  }
+
+  // Case C — CSS is base, fill gaps from screenshot
   const final = [...cssColors];
 
-  // add screenshot colors only if not similar to anything already in final
   for (const sc of screenColors) {
-    if (!isSimilarColor(sc, final)) {
+    if (final.length >= MAX_COLORS) break;
+    if (!isSimilarToAny(sc, final, SCR_SIM_DIST)) {
       final.push(sc);
     }
   }
 
-  // final dedup pass — catches anything that slipped through merge
-  const deduped = removeDuplicateColors(final);
-
-  // fallback — if CSS gave nothing useful, use screenshot alone
-  if (deduped.length < 4 && screenColors.length > 0) {
-    return removeDuplicateColors(screenColors).slice(0, 24);
-  }
-
-  // cap at 24
-  return deduped.slice(0, 24);
+  return final;
 
 }
 
 
-// ─── Color Similarity Check ──────────────────────────────────────────────
-function isSimilarColor(hex, palette) {
-
-  for (const c of palette) {
-    if (colorDistance(hex, c) < 40) return true;
+// ─── Similarity Dedup ─────────────────────────────────────────────────────────
+// Used for screenshot internal dedup only — NOT for CSS.
+function removeSimilar(colors, threshold) {
+  const unique = [];
+  for (const c of colors) {
+    if (!isSimilarToAny(c, unique, threshold)) unique.push(c);
   }
-
-  return false;
-
+  return unique;
 }
 
 
-// ─── Color Distance (Euclidean RGB) ─────────────────────────────────────
+// ─── Is hex within threshold distance of any color in palette? ────────────────
+function isSimilarToAny(hex, palette, threshold) {
+  return palette.some(c => colorDistance(hex, c) < threshold);
+}
+
+
+// ─── Euclidean RGB Distance ───────────────────────────────────────────────────
 function colorDistance(c1, c2) {
-
   const [r1, g1, b1] = hexToRgb(c1);
   const [r2, g2, b2] = hexToRgb(c2);
-
-  return Math.sqrt(
-    (r1 - r2) ** 2 +
-    (g1 - g2) ** 2 +
-    (b1 - b2) ** 2
-  );
-
+  return Math.sqrt((r1-r2)**2 + (g1-g2)**2 + (b1-b2)**2);
 }
 
 
-// ─── HEX → RGB ───────────────────────────────────────────────────────────
+// ─── HEX ↔ RGB ────────────────────────────────────────────────────────────────
 function hexToRgb(hex) {
-
   hex = hex.replace('#', '');
-
   return [
     parseInt(hex.substring(0, 2), 16),
     parseInt(hex.substring(2, 4), 16),
     parseInt(hex.substring(4, 6), 16),
   ];
-
 }
 
-
-// ─── RGB → HEX ───────────────────────────────────────────────────────────
 function rgbToHex(r, g, b) {
-
   return '#' + [r, g, b]
     .map(v => v.toString(16).padStart(2, '0'))
     .join('')
     .toUpperCase();
-
 }
 
 
-// ─── Render Colors ────────────────────────────────────────────────────────
+// ─── Render Colors ────────────────────────────────────────────────────────────
 function renderColors(colors) {
 
   const grid    = document.getElementById('colorGrid');
@@ -312,8 +268,7 @@ function renderColors(colors) {
 
   result.style.display = 'block';
 
-  document.getElementById('colorCount')
-    .textContent = `${colors.length} colors`;
+  document.getElementById('colorCount').textContent = `${colors.length} colors`;
 
   saveBtn.style.display = 'flex';
   saveBtn.classList.remove('saved');
@@ -352,7 +307,7 @@ function renderColors(colors) {
 }
 
 
-// ─── Save Palette ─────────────────────────────────────────────────────────
+// ─── Save Palette ─────────────────────────────────────────────────────────────
 document.getElementById('savePaletteBtn').addEventListener('click', () => {
 
   if (!currentColors.length) return;
@@ -379,13 +334,12 @@ document.getElementById('savePaletteBtn').addEventListener('click', () => {
 });
 
 
-// ─── Render Saved Palettes ────────────────────────────────────────────────
+// ─── Render Saved Palettes ────────────────────────────────────────────────────
 function renderSaved() {
 
   const list = document.getElementById('savedList');
 
-  document.getElementById('savedCount')
-    .textContent = savedPalettes.length;
+  document.getElementById('savedCount').textContent = savedPalettes.length;
 
   list.innerHTML = '';
 
@@ -457,50 +411,38 @@ function renderSaved() {
 }
 
 
-// ─── Tabs ─────────────────────────────────────────────────────────────────
+// ─── Tabs ─────────────────────────────────────────────────────────────────────
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
 
 function switchTab(tab) {
-
   document.querySelectorAll('.tab-btn')
     .forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-
   document.querySelectorAll('.panel')
     .forEach(p => p.classList.remove('active'));
-
-  document.getElementById(`panel-${tab}`)
-    .classList.add('active');
-
+  document.getElementById(`panel-${tab}`).classList.add('active');
   if (tab === 'saved') renderSaved();
-
 }
 
 
-// ─── Copy ─────────────────────────────────────────────────────────────────
+// ─── Copy ─────────────────────────────────────────────────────────────────────
 function copyColor(hex, el) {
-
   navigator.clipboard.writeText(hex).catch(() => {});
-
   if (el) {
     el.classList.add('copied');
     setTimeout(() => el.classList.remove('copied'), 900);
   }
-
   showToast(`${hex} copied!`);
-
 }
 
 
-// ─── Helpers ──────────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 function showToast(msg) {
-
   const t = document.getElementById('toast');
   t.textContent = `✓ ${msg}`;
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 1800);
-
 }
 
 function persist() {
@@ -512,5 +454,5 @@ function sleep(ms) {
 }
 
 
-// ─── Init ─────────────────────────────────────────────────────────────────
+// ─── Init ─────────────────────────────────────────────────────────────────────
 renderSaved();
