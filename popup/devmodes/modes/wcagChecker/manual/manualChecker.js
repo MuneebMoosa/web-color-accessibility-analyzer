@@ -38,10 +38,10 @@ function updateUI(){
       pass?'Pass ✔':'Fail ✖'
   }
 
-  set('aa-large',ratio>=3)
-  set('aaa-large',ratio>=4.5)
-  set('aa-normal',ratio>=4.5)
-  set('aaa-normal',ratio>=7)
+  set('aaa-normal', ratio >= 7.0)
+  set('aaa-large',  ratio >= 4.5)
+  set('aa-normal',  ratio >= 4.5)
+  set('aa-large',   ratio >= 3.0)
 }
 
 function syncPicker(hexId,pickerId){

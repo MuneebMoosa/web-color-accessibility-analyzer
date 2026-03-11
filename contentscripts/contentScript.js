@@ -1,48 +1,33 @@
-const FILTER_ID     = 'cb-filter-svg';   // SVG container id
-const ROOT_ATTR     = 'data-cb-mode';    
+const FILTER_ID = 'cb-filter-svg';
+const ROOT_ATTR = 'data-cb-mode';
 
 const FILTERS = {
 
   protanopia: {
     id: 'cb-protanopia',
-    // L-cone (red) weak
-    // Aggressive: red channel fully redirected to green channel
-    // so protanopia patient sees strong distinction
-    matrix: `0.0  1.0  0.0  0  0
-             0.0  1.0  0.0  0  0
-             0.0  0.0  1.0  0  0
-             0.0  0.0  0.0  1  0`
+    // red weakness → shift red info into blue/green
+    matrix: `0.817 0.183 0.000 0 0
+             0.333 0.667 0.000 0 0
+             0.000 0.125 0.875 0 0
+             0.000 0.000 0.000 1 0`
   },
 
   deuteranopia: {
     id: 'cb-deuteranopia',
-    // M-cone (green) weak
-    // Aggressive: green channel redistributed into red & blue
-    matrix: `1.0  0.0  0.0  0  0
-             0.5  0.0  0.5  0  0
-             0.0  0.0  1.0  0  0
-             0.0  0.0  0.0  1  0`
+    // green weakness → redistribute green to red/blue
+    matrix: `0.800 0.200 0.000 0 0
+             0.258 0.742 0.000 0 0
+             0.000 0.142 0.858 0 0
+             0.000 0.000 0.000 1 0`
   },
 
   tritanopia: {
     id: 'cb-tritanopia',
-    // S-cone (blue) weak
-    // Aggressive: blue channel pushed into green channel
-    matrix: `1.0  0.0  0.0  0  0
-             0.0  1.0  0.0  0  0
-             0.0  0.7  0.3  0  0
-             0.0  0.0  0.0  1  0`
-  },
-
-  universal: {
-    id: 'cb-universal',
-    // Luminance based universal matrix
-    // Converts to perceptual luminance values
-    // Maximises contrast for ALL deficiency types simultaneously
-    matrix: `0.299  0.587  0.114  0  0
-             0.299  0.587  0.114  0  0
-             0.299  0.587  0.114  0  0
-             0.000  0.000  0.000  1  0`
+    // blue weakness → redistribute blue to red/green
+    matrix: `0.967 0.033 0.000 0 0
+             0.000 0.733 0.267 0 0
+             0.000 0.183 0.817 0 0
+             0.000 0.000 0.000 1 0`
   }
 
 };

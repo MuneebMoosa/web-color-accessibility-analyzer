@@ -21,9 +21,7 @@ chrome.storage.local.get(["selectedMode"], (data) => {
 buttons.forEach(button => {
     button.addEventListener("click" , () => { 
         let selectedMode = " ";
-        if (button.classList.contains("universal")){
-          selectedMode = "universal";
-        }else if(button.classList.contains("protanopia")){
+        if(button.classList.contains("protanopia")){
           selectedMode = "protanopia";
         }else if(button.classList.contains("deuteranopia")){
           selectedMode = "deuteranopia";
